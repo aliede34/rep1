@@ -6,6 +6,7 @@ BUILD_DIR="$PROJECT_ROOT/build"
 KERNEL="$BUILD_DIR/kernel.elf"
 GRUB_CFG="$PROJECT_ROOT/src/grub.cfg"
 OUTPUT="${1:-$BUILD_DIR/os.iso}"
+NASM="${NASM:-nasm}"
 
 if [ ! -f "$GRUB_CFG" ]; then
     echo "Cannot find GRUB configuration at $GRUB_CFG" >&2
@@ -13,6 +14,12 @@ if [ ! -f "$GRUB_CFG" ]; then
 fi
 
 if [ ! -f "$KERNEL" ]; then
+    if ! command -v "$NASM" >/dev/null 2>&1; then
+        echo "Error: NASM assembler ($NASM) not found in PATH." >&2
+        echo "Install NASM (e.g. sudo apt install nasm, brew install nasm, or pacman -S nasm on MSYS2) and retry." >&2
+        exit 1
+    fi
+
     echo "Kernel image not found at $KERNEL. Building it first..."
     make -C "$PROJECT_ROOT" kernel
 fi

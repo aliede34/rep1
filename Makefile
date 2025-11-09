@@ -7,6 +7,12 @@ NASMFLAGS := -f elf32 -F dwarf -g
 LD := ld
 LDFLAGS := -m elf_i386 -T src/linker.ld
 
+NASM_PATH := $(strip $(shell (command -v $(NASM) || which $(NASM) || where $(NASM)) 2>/dev/null))
+
+ifeq ($(NASM_PATH),)
+$(error Error: NASM assembler ($(NASM)) not found in PATH. Install NASM (e.g. sudo apt install nasm, brew install nasm, or pacman -S nasm on MSYS2) and retry.)
+endif
+
 .PHONY: all kernel iso clean
 
 all: kernel
